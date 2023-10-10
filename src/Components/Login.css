@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+ 
+
+*{
+    
+  padding: 0;
+  box-sizing: border-box;
+} 
+body{
+  overflow-x: hidden;
+  height: 100%;
+  /* width: 100vw; */
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+}
+.container{
+  width: 100%;
+  padding: 0 20px;
+  /* margin: 0px auto;  */
+  /* width: 440px; */ 
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login1{
+  width: 440px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.login1 .title{
+  height: 90px;
+  color: darkorange;
+  font-size: 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* .login form{
+  padding: 30px 25px 25px 25px;
+} */
+.login1 form .row{
+  height: 45px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.main{
+  padding: 30px 25px 25px 25px;
+}
+.row1{
+  padding-top: 2px;
+  padding-bottom: 9px;
+  top: 100%;
+  left: 10em;
+} 
+.row1 a{
+  display: block;
+  text-align: right;
+  text-decoration: none;
+  color: darkorange;
+ }
+ .row1 a:hover{
+  text-decoration: underline;
+ }
+.login1 form .row input{
+  height: 100%;
+  width: 100%;
+  outline: none;
+  padding-left: 35px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+}
+.login1 form .row #error-msg{
+  position: absolute;
+  padding: 4px;
+  top: 100%;
+  left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: red;
+}
+.login1 form .row #error1-msg{
+  position: absolute;
+  padding: 4px;
+  top: 100%;
+  left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: red;
+}
+.login1 form .row i{
+  position: absolute;
+  width: 47px;
+  height: 100%;
+  color: darkorange;
+  font-size: 18px;
+  border-radius: 5px 0 0 5px;
+  display: flex; 
+  align-items: center;  /*vertially centered*/
+  justify-content: center; /*horizontally centered*/
+}
+.login1 form .button input{
+  color: #fff;
+  font-size: 20px;
+  font-weight: 500;
+  padding-left: 0px;
+  background: darkorange;
+  border: 1px solid #16a085;
+  cursor: pointer;
+}
+form .button input:hover{
+  background: #12876f;
+}
+.login1 form .signup-link{
+  text-align: center;
+  /* margin-top: 20px; */
+  font-size: 12px;
+}
+.login1 form .signup-link a{
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+}
+form .signup-link a:hover{
+  text-decoration: underline;
+}
+.bottom{
+  background-color: darkorange;
+  border-radius: 0 0 20px 20px;
+  /* min-height: 160px;  */
+  padding-bottom: 25px;
+  height: 100%;
+}
+.bttext{
+   text-align: center;
+   color: white;
+   padding-top: 20px;
+}
+.icons{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  font-size: 30px;
+  color: white;
+  gap: 20px;
+  margin: 0px 20px 0px 20px;
+  justify-content: center;
+  /* padding-bottom: 10px; */
+}
+.fab{
+  cursor: pointer;
+}
+.invalid-input{
+  border: 1px solid red;
+}
