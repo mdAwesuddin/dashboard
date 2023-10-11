@@ -1,14 +1,24 @@
 import React,{useState} from 'react'
 import './Password.css';
-import {useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate } from 'react-router-dom';
 
 const Password = () => {
+    const fetchUrl="http://localhost:3500/api/v1/app/post";
     const[pass1,setPass1]=useState("");
     const[pass2,setPass2]=useState("");
     let[passerror1,setPasserror1]=useState("");
     let[passerror2,setPasserror2]=useState("");
     const navigate=useNavigate();
-    
+    const location = useLocation();
+    const fname=location?.state?.fname;
+    const lname=location?.state?.lname;
+    const mail=location?.state?.mail;
+    const postdata={
+      firstName:fname,
+      lastName:lname,
+      email:mail,
+      password:pass2
+    }
     function validationpassword(){
         if(!pass1.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/)){
             setPasserror1('Please Enter a Valid Password');
@@ -42,10 +52,35 @@ const Password = () => {
             return false;
         }
         // window.open('welcome.html');
-        console.log("done!");
+        const requestOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postdata),
+        };
+  
+        fetch(fetchUrl, requestOptions)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            {
+              console.log("done!");
+
+            }
+            console.log(data)
+          })
+          .catch((error) => {
+            console.error("POST request error:", error);
+          });
         document.querySelector(".popup").classList.add("active");
         document.querySelector(".popup .close-btn").addEventListener("click",function(){
         document.querySelector(".popup").classList.remove("active");
+       
         // location.reload();
         // window.location.reload()
         navigate('/');

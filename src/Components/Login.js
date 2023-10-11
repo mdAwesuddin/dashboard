@@ -1,6 +1,5 @@
 import React,{useState} from 'react'
 import { NavLink,useNavigate } from 'react-router-dom';
-
 import './Login.css';
 
 const Login = () => {
@@ -8,6 +7,7 @@ const Login = () => {
     const[pass,setPass]=useState("");
     let[emailerror,setemailerror]=useState("");
     let[passerror,setpasserror]=useState("");
+    let[dataerror,setdataerror]=useState("");
     const navigate=useNavigate();
     var validmaildata;
     var validpassdata;
@@ -15,12 +15,14 @@ const Login = () => {
         
         if(mail.trim()===""){
             setemailerror("");
+            setdataerror("");
             validmaildata=false;
         }else if(!mail.match(/^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)){
             setemailerror("Please Enter a Valid Email ");
             validmaildata=false;
         }else{
             setemailerror("");
+            setdataerror("");
             validmaildata=true;
         }
     }
@@ -29,20 +31,47 @@ const Login = () => {
        
         if(pass.trim()===""){
             setpasserror("");
+            setdataerror("");
             validpassdata=false;
            }
            else{
             setpasserror("");
+            setdataerror("");
             validpassdata=true;
        }
     }
-     function validation(event){
+
+    const fetchUserData = async () => {
+      const response = await fetch('http://localhost:3500/api/v1/app/get'); // Replace with your API endpoint
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      return response.json();
+    };
+
+    const validation = async (event) => {
       event.preventDefault();
         checkmail();
         checkpass();
        
         if(validmaildata&&validpassdata){
-          navigate('/dashboard')
+          try {
+            const userDataArray = await fetchUserData();
+      
+            // Check if any user data matches the input
+            const matchFound = userDataArray.some((userData) => {
+              return userData.email === mail && userData.password === pass;
+            });
+      
+            if (matchFound) {
+              
+              navigate('/dashboard');
+            } else {
+              setdataerror("Invalid credentials")
+            }
+          } catch (error) {
+            console.log("error")
+          } 
           // window.open('dashboard');
           // window.location.reload()
         }else if(validmaildata){
@@ -72,6 +101,7 @@ const Login = () => {
           <i className="fas fa-lock"></i>
           <input type="password" placeholder="Password" id="pass-field" value={pass} onChange={(e)=>setPass(e.target.value)} onInput={checkpass}/>
           <span id="error1-msg">{passerror}</span>
+          <span id="error1-msg">{dataerror}</span>
         </div>
         <div className="row1">
           <NavLink to={"/forgotpassword"}>Forgot Password?</NavLink>

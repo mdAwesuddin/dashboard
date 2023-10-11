@@ -1,7 +1,7 @@
 import React,{useState} from 'react'
 import './Signup.css';
 import { NavLink,useNavigate } from 'react-router-dom';
-
+import Password from './Password';
 
 const Signup = () => {
   const[fname,setFname]=useState("");
@@ -10,6 +10,7 @@ const Signup = () => {
   let[ferror,setFerror]=useState("");
   let[lerror,setLerror]=useState("");
   let[mailerror,setMailerror]=useState("");
+  const [validData, setValidData] = useState(false);
   const navigate=useNavigate();
 
   var validfnamedata;
@@ -67,10 +68,15 @@ const Signup = () => {
       validlnamedata
   
     ) {
-  
+
       event.preventDefault();
-      // window.open('password','_self');
-      navigate('/password');
+      setValidData(true);
+      navigate('/password',{state:{
+        fname:fname,
+        lname:lname,
+        mail:mail
+      }});
+      
     }else if (validmaildata && validfnamedata) {
       event.preventDefault();
   
@@ -165,6 +171,7 @@ const Signup = () => {
       </div>
     </form>
       </div>
+      {validData && <Password fname={fname} />} 
     </div>
   )
 }
