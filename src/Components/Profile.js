@@ -2,16 +2,27 @@ import React,{useState} from 'react'
 import './Profile.css';
 
 const Profile = () => {
-  const[fname,setFname]=useState("");
-  const[lname,setLname]=useState("");
-  const[mail,setMail]=useState("");
+  const userData = JSON.parse(localStorage.getItem('data'));
+  console.log(userData);
+  const[fname,setFname]=useState(userData.firstName);
+  const[lname,setLname]=useState(userData.lastName);
+  const[mail,setMail]=useState(userData.email);
   let[ferror,setFerror]=useState("");
   let[lerror,setLerror]=useState("");
   let[mailerror,setMailerror]=useState("");
   var validfnamedata;
   var validlnamedata;
   var validmaildata;
-  
+  const _id = userData._id;
+  const password=userData.password;
+  let url=`http://localhost:3500/api/v1/app/${userData._id}`;
+  let updateddata={
+    _id:_id,
+    firstName:fname,
+    lastName:lname,
+    email:mail,
+    password:password
+  }
   const checkmail=()=>{
       
       if(mail.trim()===""){
@@ -48,12 +59,12 @@ const Profile = () => {
         validlnamedata=true;
    }
 }
+
    function validation(event){
     event.preventDefault();
      checkfname();
      checklname();
      checkmail();
-     
      if (
 
       validmaildata &&
@@ -65,12 +76,38 @@ const Profile = () => {
     ) {
   
       event.preventDefault();
+      const requestOptions = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateddata),
+      };
+
+      fetch(url, requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        {
+          localStorage.setItem('data', JSON.stringify(updateddata));
+          console.log("done!");
+
+        }
+        console.log(data)
+      })
+      .catch((error) => {
+        console.error("POST request error:", error);
+        });
       document.querySelector(".popup").classList.add("active");
       document.querySelector(".popup .close-btn").addEventListener("click",function(){
       document.querySelector(".popup").classList.remove("active");
-      setFname("");
-      setLname("");
-      setMail("");
+      // setFname("");
+      // setLname("");
+      // setMail("");
     });
       
     

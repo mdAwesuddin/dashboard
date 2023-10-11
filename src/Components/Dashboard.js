@@ -6,6 +6,8 @@ import { NavLink,Outlet,useNavigate } from 'react-router-dom';
 const Dashboard = () => {
 const navigate=useNavigate();
 
+const userData = JSON.parse(localStorage.getItem('data'));
+
 const [formData, setFormData] = useState({
   firstName: '',
   lastName: '',
@@ -227,7 +229,7 @@ const checknum=()=>{
             <NavLink to="/dashboard" activeClassName="active" class="Home-link"  onClick={settogglevisible}>Home</NavLink>
         <div class="dropdown">
         <button class="dropbtn">          <i className="fas fa-user"></i>
-<span class="user">Awesuddin</span><i class="fa fa-caret-down"></i></button>
+       <span class="user">{`${userData.firstName} ${userData.lastName}`}</span><i class="fa fa-caret-down"></i></button>
             <div class="dropdown-content">
                 <NavLink onClick={settogglevisibility} to="/dashboard/profile"><i class="fas fa-user" style={{paddingright: '5px'}}></i>Profile</NavLink>
                 <NavLink onClick={settogglevisibility} to="/dashboard/changepassword"><i class="fas fa-lock" style={{paddingright: '5px'}}></i>Change Password</NavLink>

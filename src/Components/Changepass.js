@@ -8,7 +8,10 @@ const Changepass = () => {
   let[perror1,setPerror1]=useState("");
   let[perror2,setPerror2]=useState("");
   let[perror3,setPerror3]=useState("");
-
+  const userData = JSON.parse(localStorage.getItem('data'));
+  const fetchurl =`http://localhost:3500/api/v1/app/${userData._id}`
+  const validpass=userData.password;
+  var validpasslocal;
     function validationpassword(){
     if(pass1===""){
     setPerror1('');
@@ -30,6 +33,13 @@ const Changepass = () => {
    return true;
    }
    }
+   function passwordhandler(){
+    if(pass1===validpass){
+      validpasslocal=true;
+    }else{
+      validpasslocal=false;
+    }
+   }
    function validationpassword2(){
     if(!cpass.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/)){
     setPerror3('Please Enter a Valid Passowrd');
@@ -39,6 +49,9 @@ const Changepass = () => {
     setPerror3("");
    return true;
    }
+   }
+   const postData={
+    password:cpass
    }
   function validation(event){
     event.preventDefault();
@@ -56,6 +69,34 @@ const Changepass = () => {
         return false;
     }  
     // window.open('welcome.html');
+    else (validpasslocal){
+
+      const requestOptions = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      };
+
+      fetch(fetchurl, requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        {
+          localStorage.setItem('data', JSON.stringify(postData));
+          console.log("done!");
+
+        }
+        console.log(data)
+      })
+      .catch((error) => {
+        console.error("POST request error:", error);
+        });
     document.querySelector(".popup").classList.add("active");
     document.querySelector(".popup .close-btn").addEventListener("click",function(){
     document.querySelector(".popup").classList.remove("active");
@@ -66,6 +107,7 @@ const Changepass = () => {
     });
     return true;
     }
+  }
   
   return (
     <div>

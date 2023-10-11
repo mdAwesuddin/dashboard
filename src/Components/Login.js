@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { NavLink,useNavigate } from 'react-router-dom';
 import './Login.css';
 
@@ -8,9 +8,51 @@ const Login = () => {
     let[emailerror,setemailerror]=useState("");
     let[passerror,setpasserror]=useState("");
     let[dataerror,setdataerror]=useState("");
+    let[maindata,setMainData]=useState("");
     const navigate=useNavigate();
     var validmaildata;
     var validpassdata;
+    let localdata;
+    let matchFound;
+    let fetchUrl="http://localhost:3500/api/v1/app/get";
+    const requestOptions={
+      method:"GET",
+    }
+    useEffect(() => {
+
+      fetch(fetchUrl, requestOptions)
+  
+        .then((response) => {
+  
+          if (!response.ok) {
+  
+            throw new Error("Network response was not ok");
+  
+          }
+          return response.json();
+  
+        })
+        .then((data) => {
+  
+          setMainData(data);
+        })
+        .catch((error) => {
+          console.error("GET request error:", error);
+        });
+  
+    },[]);
+
+    function datacheck() {
+        maindata.some((eachuser) => {
+        if(eachuser.email === mail && eachuser.password === pass){
+          matchFound = true
+          localdata = eachuser;
+  
+        }
+  
+    });
+  
+    }
     const checkmail=()=>{
         
         if(mail.trim()===""){
@@ -53,28 +95,17 @@ const Login = () => {
       event.preventDefault();
         checkmail();
         checkpass();
-       
-        if(validmaildata&&validpassdata){
-          try {
-            const userDataArray = await fetchUserData();
-      
-            // Check if any user data matches the input
-            const matchFound = userDataArray.some((userData) => {
-              return userData.email === mail && userData.password === pass;
-            });
-      
-            if (matchFound) {
+        datacheck();
+        if(validmaildata&&validpassdata&&matchFound){
+          localStorage.setItem('data', JSON.stringify(localdata));
               
               navigate('/dashboard');
-            } else {
+            } else if(validmaildata&&validpassdata&&!matchFound){
               setdataerror("Invalid credentials")
             }
-          } catch (error) {
-            console.log("error")
-          } 
           // window.open('dashboard');
           // window.location.reload()
-        }else if(validmaildata){
+        else if(validmaildata){
           event.preventDefault();
           setpasserror("Field is required");
         }else if(validpassdata){
