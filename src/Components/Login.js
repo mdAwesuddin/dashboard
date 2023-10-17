@@ -14,7 +14,7 @@ const Login = () => {
     var validpassdata;
     let localdata;
     let matchFound;
-    let fetchUrl="http://localhost:3500/api/v1/app/get";
+    let fetchUrl="http://localhost:3500/api/v1/app/user";
     const requestOptions={
       method:"GET",
     }
@@ -41,13 +41,14 @@ const Login = () => {
         });
   
     },[]);
-
+    var idtake;
     function datacheck() {
-        maindata.some((eachuser) => {
-        if(eachuser.email === mail && eachuser.password === pass){
+        maindata.map((eachuser) => {
+          const {email,password}=eachuser;
+        if(email === mail && password === pass){
           matchFound = true
           localdata = eachuser;
-  
+          idtake=eachuser._id
         }
   
     });
@@ -99,7 +100,7 @@ const Login = () => {
         if(validmaildata&&validpassdata&&matchFound){
           localStorage.setItem('data', JSON.stringify(localdata));
               
-              navigate('/dashboard');
+              navigate(`/dashboard/${idtake}`);
             } else if(validmaildata&&validpassdata&&!matchFound){
               setdataerror("Invalid credentials")
             }

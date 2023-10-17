@@ -9,68 +9,97 @@ const Changepass = () => {
   let[perror2,setPerror2]=useState("");
   let[perror3,setPerror3]=useState("");
   const userData = JSON.parse(localStorage.getItem('data'));
-  const fetchurl =`http://localhost:3500/api/v1/app/${userData._id}`
+  const fetchurl =`http://localhost:3500/api/v1/app/user/${userData._id}`
   const validpass=userData.password;
+  const validfname=userData.firstName;
+  const validlname=userData.lastName;
+  const validmail=userData.email;
+  const valid_id=userData._id;
+  var cpass1;
+  var cpass2;
+  var ppass1;
   var validpasslocal;
     function validationpassword(){
     if(pass1===""){
     setPerror1('');
+    cpass1=false;
      return false;
    }
    
    else{
     setPerror1("");
+    cpass1=true;
    return true;
    }
    }
    function validationpassword1(){
     if(!pass2.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/)){
     setPerror2('Please Enter a Valid Passowrd');
+    cpass2=false;
      return false;
    }
    else{
     setPerror2("");
+    cpass2=true;
    return true;
    }
    }
    function passwordhandler(){
     if(pass1===validpass){
+      setPerror1("")
       validpasslocal=true;
     }else{
+      setPerror1("Password Incorrect")
       validpasslocal=false;
     }
    }
    function validationpassword2(){
     if(!cpass.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/)){
     setPerror3('Please Enter a Valid Passowrd');
+    ppass1=false;
      return false;
    }
    else{
     setPerror3("");
-   return true;
+    ppass1=true;
+    return true;
    }
    }
    const postData={
+    _id:valid_id,
+    firstName:validfname,
+    lastName:validlname,
+    email:validmail,
     password:cpass
+
    }
   function validation(event){
-    event.preventDefault();
+    event.preventDefault()
+    passwordhandler();
+    
     if ( pass2 != cpass) {
         setPerror3('Password Doesnt Match');
         return false;
     }
-    else if(!pass1 ){
-        setPerror1('Field Should not be Empty');   
-        
-    }
-    if(pass2.length<=0 && cpass.length<=0){
+   
+   else if(pass1.length<=0&&pass2.length<=0 && cpass.length<=0){
+        setPerror1('Field Should not be Empty');
         setPerror2('Field Should not be Empty');
         setPerror3('Field Should not be Empty');
         return false;
-    }  
+    }
+    else if(pass2.length<=0 && cpass.length<=0){
+      setPerror2('Field Should not be Empty');
+      setPerror3('Field Should not be Empty');
+      return false;
+  } 
+    else if(!pass1 ){
+      setPerror1('Field Should not be Empty');   
+      
+  } 
     // window.open('welcome.html');
-    else (validpasslocal){
-
+    else{
+    if(validpasslocal){
       const requestOptions = {
         method: "PUT",
         headers: {
@@ -106,8 +135,20 @@ const Changepass = () => {
     
     });
     return true;
-    }
   }
+  }
+  //else if( pass2 != cpass){
+  //   setPerror3('Password Doesnt Match');
+  //       return false;
+  // } else if(!pass1 ){
+  //         setPerror1('Field Should not be Empty');   
+  // }
+  //  else if(pass2.length<=0 && cpass.length<=0){
+  //         setPerror2('Field Should not be Empty');
+  //         setPerror3('Field Should not be Empty');
+  //         return false;
+  //     }  
+    }
   
   return (
     <div>

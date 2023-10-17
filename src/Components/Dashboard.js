@@ -5,6 +5,7 @@ import {faRightFromBracket  } from '@fortawesome/free-solid-svg-icons'
 import { NavLink,Outlet,useNavigate } from 'react-router-dom';
 const Dashboard = () => {
 const navigate=useNavigate();
+const fetchUrl="http://localhost:3500/api/v1/app/Dashboard";
 
 const userData = JSON.parse(localStorage.getItem('data'));
 
@@ -13,8 +14,9 @@ const [formData, setFormData] = useState({
   lastName: '',
   email: '',
   phoneNumber: '',
-  profileImage: '',
+  image: '',
 });
+ 
 const [users, setUsers] = useState([]);
 const [showPopup, setShowPopup] = useState(false);
 const [editMode, setEditMode] = useState(false);
@@ -32,7 +34,13 @@ let[lerror,setLerror]=useState("");
 let[mailerror,setMailerror]=useState("");
 let[numerror,setNumerror]=useState("");
 let[photoerror,setPhotoerror]=useState("");
-
+// let updateddata={
+//   firstName:fname,
+//   lastName:lname,
+//   email:mail,
+//   phoneNumber:num,
+//   image:image
+// }
 var validfnamedata;
 var validlnamedata;
 var validmaildata;
@@ -88,20 +96,41 @@ const checknum=()=>{
         validnumdata=true;
       }
 }
+console.log(users)
+const requestOptions = {
 
-// var currentURL = window.location.href;
-// const homelink=useRef("");
-// let dataref=useRef(null);
-// let uploadref=useRef(null);
-// useEffect(() => {
-//     if (homelink.current) {
-//       var href = homelink.current.getAttribute('to');
-//       var link=`http://localhost:3000/dashboard`+href;
-//       if (link === currentURL) {
-//         homelink.current.classList.add('Home-link-active'); 
-//       }
-//     }
-//   }, []);
+  method: "GET",
+
+};
+
+
+useEffect(() => {
+  fetch(fetchUrl, requestOptions)
+
+    .then((response) => {
+
+      if (!response.ok) {
+
+        throw new Error("Network response was not ok");
+      } 
+
+      return response.json();
+
+    })
+
+    .then((data) => {
+
+      setUsers(data);
+
+    })
+
+    .catch((error) => {
+
+      console.error("GET request error:", error);
+
+    });
+
+}, []);
   const handleSubmit = (event) => {
     event.preventDefault();
     if (editMode) {
@@ -112,6 +141,31 @@ const checknum=()=>{
     } else {
       // Add new user
       setUsers([...users, { ...formData }]);
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      };
+
+      fetch(fetchUrl, requestOptions)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          {
+            console.log("done!");
+
+          }
+          console.log(data)
+        })
+        .catch((error) => {
+          console.error("POST request error:", error);
+        });
     }
     clearForm();
   
@@ -121,7 +175,7 @@ const checknum=()=>{
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, profileImage: imageUrl });
+      setFormData({ ...formData, image: imageUrl });
     }
   };
 
@@ -135,7 +189,7 @@ const checknum=()=>{
       lastName: '',
       email: '',
       phoneNumber: '',
-      profileImage: '',
+      image: '',
     });
     setEditMode(false);
     setSelectedUserIndex(null);
@@ -163,8 +217,9 @@ const checknum=()=>{
         (user) =>
           user.firstName.toLowerCase().includes(searchQuery) ||
           user.lastName.toLowerCase().includes(searchQuery) ||
-          user.email.toLowerCase().includes(searchQuery) ||
-          user.phoneNumber.toLowerCase().includes(searchQuery)
+          user.email.toLowerCase().includes(searchQuery) 
+          // ||
+          // user.phoneNumber.toLowerCase().includes(searchQuery)
       )
     : users;
   // Render user rows
@@ -178,9 +233,10 @@ const checknum=()=>{
     }
 
     return filteredUsers.map((user, index) => (
-      <tr key={index}>
+      <tr key={user._id}>
+        {/* index */}
         <td data-title="Profile">
-          <img src={user.profileImage} alt="Profile" width="80" height="80" />
+          <img src={user.image} alt="Profile" width="80" height="80" />
         </td>
         <td data-title="First Name">{user.firstName}</td>
         <td data-title="Last Name">{user.lastName}</td>
@@ -188,16 +244,25 @@ const checknum=()=>{
         <td data-title="Phone Number">{user.phoneNumber}</td>
         <td id="buttons" data-title="Actions">
           <button id="edit-btn" onClick={() => editUser(index)}>Edit</button>
-          <button id="delete-btn"  onClick={() => deleteUser(index)}>Delete</button>
+          <button id="delete-btn"  onClick={() => deleteUser(user._id)}>Delete</button>
         </td>
       </tr>
     ));
   };
-
-  const deleteUser = (index) => {
-    const updatedUsers = [...users];
-    updatedUsers.splice(index, 1);
-    setUsers(updatedUsers);
+  function clear(){
+  localStorage.clear();
+  }
+  const deleteUser = async(_id) => {
+    // const updatedUsers = [...users];
+    // updatedUsers.splice(index, 1);
+    console.log(_id);
+    try {
+      await fetch(`http://localhost:3500/api/v1/app/Dashboard/${_id}`, { method: 'DELETE' });
+      // Remove the deleted item from the local state
+      setUsers(users.filter(item => item._id !== _id));
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
   };
 
   const handleInputChange = (event) => {
@@ -212,28 +277,29 @@ const checknum=()=>{
     const selectedUser = users[index];
     setFormData({ ...selectedUser });
   };
+
           function settogglevisibility(){
                setToggle(true);
           }
 
-          function settogglevisible(){
-            setToggle(false);
-            navigate('/dashboard')
-          }
+        function settogglevisible(){
+          setToggle(false);
+          navigate('/dashboard')
+        }
 
   return (
     <>
      <nav class="navbar">
         <h3 class="logo">LOGO</h3>
         <div class="Home-main">
-            <NavLink to="/dashboard" activeClassName="active" class="Home-link"  onClick={settogglevisible}>Home</NavLink>
+            <NavLink to={`/dashboard/${userData._id}`} activeClassName="active" class="Home-link"  onClick={settogglevisible}>Home</NavLink>
         <div class="dropdown">
         <button class="dropbtn">          <i className="fas fa-user"></i>
        <span class="user">{`${userData.firstName} ${userData.lastName}`}</span><i class="fa fa-caret-down"></i></button>
             <div class="dropdown-content">
-                <NavLink onClick={settogglevisibility} to="/dashboard/profile"><i class="fas fa-user" style={{paddingright: '5px'}}></i>Profile</NavLink>
-                <NavLink onClick={settogglevisibility} to="/dashboard/changepassword"><i class="fas fa-lock" style={{paddingright: '5px'}}></i>Change Password</NavLink>
-                <NavLink class="log" to="/"><FontAwesomeIcon icon={faRightFromBracket} />Logout</NavLink>
+                <NavLink onClick={settogglevisibility} to={`/dashboard/${userData._id}/profile`}><i class="fas fa-user" style={{paddingright: '5px'}}></i>Profile</NavLink>
+                <NavLink onClick={settogglevisibility} to={`/dashboard/${userData._id}/changepassword`}><i class="fas fa-lock" style={{paddingright: '5px'}}></i>Change Password</NavLink>
+                <NavLink class="" to="/" onClick={clear}><i class="fas fa-sign-out-alt" style={{paddingright: '5px'}}></i>Logout</NavLink>
             </div>
         </div>
         </div>
@@ -302,7 +368,7 @@ const checknum=()=>{
                       </div>
                       <div class="row1">
                         <img
-                src={formData.profileImage}
+                src={formData.image}
                 alt="Image Preview"
                  id="preview-image" 
                 width="250" 

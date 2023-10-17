@@ -3,7 +3,7 @@ import './Password.css';
 import {useLocation, useNavigate } from 'react-router-dom';
 
 const Password = () => {
-    const fetchUrl="http://localhost:3500/api/v1/app/post";
+    const fetchUrl="http://localhost:3500/api/v1/app/user";
     const[pass1,setPass1]=useState("");
     const[pass2,setPass2]=useState("");
     let[passerror1,setPasserror1]=useState("");

@@ -15,7 +15,7 @@ const Profile = () => {
   var validmaildata;
   const _id = userData._id;
   const password=userData.password;
-  let url=`http://localhost:3500/api/v1/app/${userData._id}`;
+  let url=`http://localhost:3500/api/v1/app/user/${userData._id}`;
   let updateddata={
     _id:_id,
     firstName:fname,
