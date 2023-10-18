@@ -7,6 +7,7 @@ const Profile = () => {
   const[fname,setFname]=useState(userData.firstName);
   const[lname,setLname]=useState(userData.lastName);
   const[mail,setMail]=useState(userData.email);
+
   let[ferror,setFerror]=useState("");
   let[lerror,setLerror]=useState("");
   let[mailerror,setMailerror]=useState("");

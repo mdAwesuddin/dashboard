@@ -2,6 +2,7 @@ import React,{useRef,useState,useEffect} from 'react'
 import './Ds.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faRightFromBracket  } from '@fortawesome/free-solid-svg-icons'
+import { useForm } from "react-hook-form";
 import { NavLink,Outlet,useNavigate } from 'react-router-dom';
 const Dashboard = () => {
 const navigate=useNavigate();
@@ -20,8 +21,18 @@ const [formData, setFormData] = useState({
 const [users, setUsers] = useState([]);
 const [showPopup, setShowPopup] = useState(false);
 const [editMode, setEditMode] = useState(false);
+const[_id,setId]=useState("");
 const [selectedUserIndex, setSelectedUserIndex] = useState(null);
 const [searchQuery, setSearchQuery] = useState('');
+const {
+
+  register,
+
+  handleSubmit,
+
+  formState: { errors },
+
+} = useForm();
 let[fname,setFname]=useState("");
 let[lname,setLname]=useState("");
 let[mail,setMail]=useState("");
@@ -47,7 +58,6 @@ var validmaildata;
 var validnumdata;
 var validPhotoData;
 var imageurl;
-
 
 const checkfname=()=>{
      
@@ -96,7 +106,6 @@ const checknum=()=>{
         validnumdata=true;
       }
 }
-console.log(users)
 const requestOptions = {
 
   method: "GET",
@@ -131,13 +140,40 @@ useEffect(() => {
     });
 
 }, []);
-  const handleSubmit = (event) => {
+  const handlesubmit = (event) => {
     event.preventDefault();
+    
     if (editMode) {
       // Update user data
       const updatedUsers = [...users];
       updatedUsers[selectedUserIndex] = { ...formData };
       setUsers(updatedUsers);
+      const requestOptions = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUsers[selectedUserIndex]),
+      };
+
+      fetch(`http://localhost:3500/api/v1/app/Dashboard/${_id}`, requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        {
+         
+          console.log("done!");
+
+        }
+        console.log(data)
+      })
+      .catch((error) => {
+        console.error("POST request error:", error);
+        });
     } else {
       // Add new user
       setUsers([...users, { ...formData }]);
@@ -171,11 +207,30 @@ useEffect(() => {
   
   };
 
+  // const handleImageUpload = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const imageUrl = URL.createObjectURL(file);
+  //     setFormData({ ...formData, image: imageUrl });
+  //   }
+  // };
   const handleImageUpload = (event) => {
+
     const file = event.target.files[0];
+
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, image: imageUrl });
+
+      const reader = new FileReader();
+
+      reader.readAsDataURL(file);
+
+      reader.onload = (e) => {
+
+        const base64String = e.target.result;
+
+        setFormData({ ...formData, image: base64String });
+
+      };
     }
   };
 
@@ -218,8 +273,8 @@ useEffect(() => {
           user.firstName.toLowerCase().includes(searchQuery) ||
           user.lastName.toLowerCase().includes(searchQuery) ||
           user.email.toLowerCase().includes(searchQuery) 
-          // ||
-          // user.phoneNumber.toLowerCase().includes(searchQuery)
+          ||
+          user.phoneNumber.toString().toLowerCase().includes(searchQuery)
       )
     : users;
   // Render user rows
@@ -243,7 +298,7 @@ useEffect(() => {
         <td data-title="Email">{user.email}</td>
         <td data-title="Phone Number">{user.phoneNumber}</td>
         <td id="buttons" data-title="Actions">
-          <button id="edit-btn" onClick={() => editUser(index)}>Edit</button>
+          <button id="edit-btn" onClick={() => editUser(index,user._id)}>Edit</button>
           <button id="delete-btn"  onClick={() => deleteUser(user._id)}>Delete</button>
         </td>
       </tr>
@@ -270,9 +325,10 @@ useEffect(() => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const editUser = (index) => {
+  const editUser = (index,id) => {
     setShowPopup(true);
     setEditMode(true);
+    setId(id)
     setSelectedUserIndex(index);
     const selectedUser = users[index];
     setFormData({ ...selectedUser });
@@ -323,7 +379,7 @@ useEffect(() => {
             </table>
              
             {showPopup && (
-              <form id="user-form" onSubmit={handleSubmit}>
+              <form id="user-form" onSubmit={handlesubmit}>
                  <div class="popup1">
                 <div class="head1">
                   <div class="icon1">
@@ -333,6 +389,7 @@ useEffect(() => {
                     <div class="box1">
                       <div class="row1">
                          <input
+                         {...register('firstName', { required: true })}
                          type="text"
                          placeholder="First Name"
                          name="firstName"
@@ -341,7 +398,8 @@ useEffect(() => {
                          onChange={handleInputChange}
                           />
                         <br />
-                        <span id="error-msg">{ferror}</span>
+                        {/* <span id="error-msg">{ferror}</span> */}
+                        {errors.firstName && <p>First name is required.</p>}
                       </div>
                       <div class="row1">
                         <input 
@@ -380,10 +438,10 @@ useEffect(() => {
                       </div>
                       {editMode ? (
               
-                <input type="submit" value="Update" class='adduserbtn' />
+                <input type="submit" value="Update" class='adduserbtn'/>
               
             ) : (
-              <input type="submit" value="Add User" class='adduserbtn'  />
+              <input type="submit" value="Add User" class='adduserbtn'/>
             )}     
                     </div>
                   </div>
